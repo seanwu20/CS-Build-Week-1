@@ -1,20 +1,14 @@
-from .models import Player, map
+from .models import Player
+
+from .utils import us_map, random_generator_pick_2
+
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import PlayerSerializer
 from django.core.exceptions import ObjectDoesNotExist
+
 import random
-
-places = ['gas_station', 'hotel', 'fast_food', 'bank', 'store']
-
-
-def random_generator_pick_2(arr):
-    arr_copy = arr[:]
-    random_place_1 = random.choice(arr_copy)
-    arr_copy.remove(random_place_1)
-    random_place_2 = random.choice(arr_copy)
-    return [random_place_1, random_place_2]
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
@@ -26,7 +20,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
 def player_info(request):
     try:
         player_data = Player.objects.values().get(email=request.data.get('email'))
-        current_city = map.search_map(player_data.get('city'))
+        current_city = us_map.search_map(player_data.get('city'))
         if current_city == -1:
             return Response("Player City does not exit")
         elif current_city != -1:
@@ -41,9 +35,9 @@ def player_info(request):
 @api_view(["PUT"])
 def move_city(request):
     # email, next_city user chooses, food, water
-    random_places = random_generator_pick_2(places)
+    random_places = random_generator_pick_2()
     try:
-        new_city = map.search_map(request.data.get('new_city'))
+        new_city = us_map.search_map(request.data.get('new_city'))
 
         left = new_city.left.city if new_city.left else None
         right = new_city.right.city if new_city.right else None
@@ -79,39 +73,5 @@ def move_city(request):
 
 @api_view(["GET"])
 def map_endpoint(request):
-    tree = map.to_dict(map.start)
+    tree = us_map.to_dict(us_map.start)
     return Response(tree)
-
-# @api_view(["GET"])
-# def map_endpoint(request):
-#     mapData = [
-#         {
-#             'name': 'Miami, Florida',
-#             'children': [{
-#                 'name': 'Jacksonville',
-#                 'attributes': {
-#                     'State': 'Florida'
-#                 },
-#                 'children': [{
-#                     'name': 'test',
-#                     'attributes': {
-#                         'State': 'GA'
-#                     }
-#                 }]
-#             }, {
-#                 'name': 'Tallahassee',
-#                 'attributes': {
-#                     'State': 'Florida'
-#                 },
-#                 'children': [{
-#                     'name': 'test',
-#                     'attributes': {
-#                         'State': 'AL'
-#                     }
-#                 }]
-#             }
-#             ]
-#         }
-#     ]
-#
-#     return Response(mapData)
