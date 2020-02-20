@@ -16,29 +16,11 @@ class UserInfoViewSet(viewsets.ModelViewSet):
     serializer_class = UserInfoSerializer
 
 
-@api_view(["POST"])
-def player_info(request):
-    us_map = Map()
-    us_map.populate_map()
-    try:
-        player_data = UserInfo.objects.values().get(email=request.data.get('email'))
-        current_city = us_map.search_map(player_data.get('city'))
-        if current_city == -1:
-            return Response("Player City does not exit")
-        elif current_city != -1:
-            player_data['left'] = current_city.left.city if current_city.left else None
-            player_data['right'] = current_city.right.city if current_city.right else None
-            player_data['previous'] = current_city.previous.city if current_city.previous else None
-        return Response(player_data)
-    except ObjectDoesNotExist:
-        return Response("Invalid email")
 
 
 @api_view(["PUT"])
 def move_city(request):
-    # user id, next_city user chooses, food, water
     random_places = random_generator_pick_2()
-
     us_map = Map()
     us_map.populate_map()
     try:
@@ -50,8 +32,8 @@ def move_city(request):
 
         player = UserInfo.objects.get(user_id=request.data.get('user_id'))
         player.city = request.data.get('new_city')
-        player.food = request.data.get('food')
-        player.water = request.data.get('water')
+        player.user_food = request.data.get('user_food')
+        player.user_water = request.data.get('user_water')
 
         player.location = random_places[0]
         player.food_available = random.randint(1, 10)
