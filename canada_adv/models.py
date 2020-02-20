@@ -1,11 +1,11 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 # Create your models here.
 
 
-class Player(models.Model):
-    email = models.EmailField()
+class UserInfo(models.Model):
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     food = models.IntegerField()
     water = models.IntegerField()
     state = models.CharField(max_length=30, blank=False)
@@ -18,5 +18,5 @@ class Player(models.Model):
     water_available_2 = models.IntegerField(blank=False)
 
     def __str__(self):
-        return "Player email:" + self.email + ", Current City:" + self.city + " Current State:" + self.state
+        return UserInfo.user_id
 

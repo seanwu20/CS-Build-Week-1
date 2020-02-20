@@ -1,25 +1,27 @@
-from .models import Player
+from .models import UserInfo
 
-from .utils import us_map, random_generator_pick_2
+from .utils import Map, random_generator_pick_2
 
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import PlayerSerializer
+from .serializers import UserInfoSerializer
 from django.core.exceptions import ObjectDoesNotExist
 
 import random
 
 
-class PlayerViewSet(viewsets.ModelViewSet):
-    queryset = Player.objects.all()
-    serializer_class = PlayerSerializer
+class UserInfoViewSet(viewsets.ModelViewSet):
+    queryset = UserInfo.objects.all()
+    serializer_class = UserInfoSerializer
 
 
 @api_view(["POST"])
 def player_info(request):
+    us_map = Map()
+    us_map.populate_map()
     try:
-        player_data = Player.objects.values().get(email=request.data.get('email'))
+        player_data = UserInfo.objects.values().get(email=request.data.get('email'))
         current_city = us_map.search_map(player_data.get('city'))
         if current_city == -1:
             return Response("Player City does not exit")
@@ -34,8 +36,11 @@ def player_info(request):
 
 @api_view(["PUT"])
 def move_city(request):
-    # email, next_city user chooses, food, water
+    # user id, next_city user chooses, food, water
     random_places = random_generator_pick_2()
+
+    us_map = Map()
+    us_map.populate_map()
     try:
         new_city = us_map.search_map(request.data.get('new_city'))
 
@@ -43,7 +48,7 @@ def move_city(request):
         right = new_city.right.city if new_city.right else None
         previous = new_city.previous.city if new_city.previous else None
 
-        player = Player.objects.get(email=request.data.get('email'))
+        player = UserInfo.objects.get(user_id=request.data.get('user_id'))
         player.city = request.data.get('new_city')
         player.food = request.data.get('food')
         player.water = request.data.get('water')
@@ -59,7 +64,7 @@ def move_city(request):
 
         player.save()
 
-        player_data = Player.objects.values().get(email=request.data.get('email'))
+        player_data = UserInfo.objects.values().get(user_id=request.data.get('user_id'))
 
         player_data['left'] = left
         player_data['right'] = right
@@ -68,10 +73,12 @@ def move_city(request):
         return Response(player_data)
 
     except ObjectDoesNotExist:
-        return Response("Invalid email")
+        return Response("Invalid User Id")
 
 
 @api_view(["GET"])
 def map_endpoint(request):
-    tree = us_map.to_dict(us_map.start)
-    return Response(tree)
+    us_map = Map()
+    us_map.populate_map()
+    us_map_dict = us_map.to_dict(us_map.start)
+    return Response(us_map_dict)
