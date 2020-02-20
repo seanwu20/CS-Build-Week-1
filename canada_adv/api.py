@@ -50,8 +50,8 @@ def move_city(request):
 
         player = UserInfo.objects.get(user_id=request.data.get('user_id'))
         player.city = request.data.get('new_city')
-        player.food = request.data.get('food')
-        player.water = request.data.get('water')
+        player.user_food = request.data.get('user_food')
+        player.user_water = request.data.get('user_water')
 
         player.location = random_places[0]
         player.food_available = random.randint(1, 10)
