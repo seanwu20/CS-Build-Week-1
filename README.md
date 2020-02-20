@@ -157,6 +157,38 @@ Get, put, post, delete request: `api/userinfo/`
 
 Please see Django Rest Framework model serializers and routers for more info
 
-```
+### Change cities and update user food and water 
 
+Put Request: `api/move/`
+
+```
+Authorization header: Bearer token
+
+Request: 
+{
+    "user_id": 1,
+    "user_food": 10,
+    "user_water": 12,
+    "state": "Florida",
+    "new_city": "Jacksonville"
+}
+
+
+Response
+{
+    "user_id_id": 1,
+    "user_food": 10,
+    "user_water": 12,
+    "state": "Florida",
+    "city": "Jacksonville",
+    "location": "fast_food",
+    "food_available": 9,
+    "water_available": 2,
+    "location_2": "hotel",
+    "food_available_2": 6,
+    "water_available_2": 3,
+    "left": "Macon",
+    "right": null,
+    "previous": "Miami"
+}
 ```
