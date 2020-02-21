@@ -155,3 +155,4 @@ class Map:
         self.insert_left_at('Akron', 'Pennsylvania', 'Erie')
         self.insert_left_at('Erie', 'New_York', 'Buffalo-3')
         self.insert_left_at('Buffalo-3', 'Canada', 'Canada_6')
+
