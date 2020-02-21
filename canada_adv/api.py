@@ -15,23 +15,23 @@ class UserInfoViewSet(viewsets.ModelViewSet):
     queryset = UserInfo.objects.all()
     serializer_class = UserInfoSerializer
 
+    def retrieve(self, request, *args, **kwargs):
+        us_map = Map()
+        us_map.populate_map()
+        try:
+            player_data = UserInfo.objects.values().get(user_id = self.kwargs['pk'])
+            current_city = us_map.search_map(player_data.get('city'))
+            print(current_city)
+            if current_city == -1:
+                return Response("Player City does not exit")
+            elif current_city != -1:
+                player_data['left'] = current_city.left.city if current_city.left else None
+                player_data['right'] = current_city.right.city if current_city.right else None
+                player_data['previous'] = current_city.previous.city if current_city.previous else None
+            return Response(player_data)
+        except ObjectDoesNotExist:
+            return Response("Invalid user_id")
 
-@api_view(["POST"])
-def player_info(request):
-    us_map = Map()
-    us_map.populate_map()
-    try:
-        player_data = UserInfo.objects.values().get(email=request.data.get('email'))
-        current_city = us_map.search_map(player_data.get('city'))
-        if current_city == -1:
-            return Response("Player City does not exit")
-        elif current_city != -1:
-            player_data['left'] = current_city.left.city if current_city.left else None
-            player_data['right'] = current_city.right.city if current_city.right else None
-            player_data['previous'] = current_city.previous.city if current_city.previous else None
-        return Response(player_data)
-    except ObjectDoesNotExist:
-        return Response("Invalid email")
 
 
 @api_view(["PUT"])

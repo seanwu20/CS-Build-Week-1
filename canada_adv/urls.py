@@ -15,9 +15,11 @@ router.register('userinfo', api.UserInfoViewSet)
 
 urlpatterns = [
     path(r'', include(router.urls)),
+
     path("", api.UserInfoViewSet),
     path("move/", api.move_city),
     path("map/", api.map_endpoint),
+
 
     url('register/', include('rest_auth.registration.urls')),
     path('', include('rest_auth.urls')),
