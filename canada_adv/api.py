@@ -1,6 +1,7 @@
 from .models import UserInfo
 
 from .utils import Map, random_generator_pick_2
+from django.contrib.auth.models import User
 
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -15,13 +16,17 @@ import random
 class UserInfoViewSet(viewsets.ModelViewSet):
     queryset = UserInfo.objects.all()
     serializer_class = UserInfoSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
         us_map = Map()
         us_map.populate_map()
         try:
             user_data = UserInfo.objects.values().get(user_id=self.kwargs['pk'])
+
+            user = User.objects.values().get(id=self.kwargs['pk'])
+
+            user_data['username'] = user['username']
             current_city = us_map.search_map(user_data.get('city'))
             if current_city == -1:
                 return Response("Player City does not exit")
