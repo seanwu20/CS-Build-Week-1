@@ -16,7 +16,7 @@ import random
 class UserInfoViewSet(viewsets.ModelViewSet):
     queryset = UserInfo.objects.all()
     serializer_class = UserInfoSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
         us_map = Map()

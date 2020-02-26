@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class UserInfo(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     user_food = models.IntegerField()
     user_water = models.IntegerField()
     state = models.CharField(max_length=30, blank=False)
