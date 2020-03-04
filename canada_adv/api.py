@@ -13,7 +13,6 @@ from django.db.utils import IntegrityError
 from rest_framework.permissions import IsAuthenticated
 import random
 
-
 from django.dispatch import receiver
 
 
@@ -42,7 +41,6 @@ class UserDataViewSet(viewsets.ViewSet):
             return Response(user_data)
         except ObjectDoesNotExist:
             return Response("Invalid user_id", status=400)
-
 
     def create(self, request, *args, **kwargs):
         places = random_generator_pick_2()
