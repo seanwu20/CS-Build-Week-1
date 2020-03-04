@@ -16,6 +16,7 @@ import random
 class UserInfoViewSet(viewsets.ModelViewSet):
     queryset = UserInfo.objects.all()
     serializer_class = UserInfoSerializer
+
     # permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
@@ -38,6 +39,13 @@ class UserInfoViewSet(viewsets.ModelViewSet):
         except ObjectDoesNotExist:
             return Response("Invalid user_id")
 
+    def create(self, request, *args, **kwargs):
+        places = random_generator_pick_2()
+        UserInfo.objects.create(user=self.kwargs['pk'], user_food=10, user_water=10, state='Florida', city="Miami",
+                                location=places[0], food_available_1=5, water_available_1=5,
+                                location_2=places[1], food_available_2=5, water_available_2=5)
+        return Response("added to db")
+
     def update(self, request, *args, **kwargs):
         # user id, next_city user chooses, food, water
         random_places = random_generator_pick_2()
@@ -55,7 +63,7 @@ class UserInfoViewSet(viewsets.ModelViewSet):
             user_data.user_water = request.data.get('user_water')
 
             user_data.location = random_places[0]
-            user_data.food_available = random.randint(1, 10)
+            user_data.food_available_1 = random.randint(1, 10)
             user_data.water_available = random.randint(1, 10)
             user_data.state = new_city.state
 
