@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 import random
 
 
-class UserInfoViewSet(viewsets.ModelViewSet):
+class UserInfoViewSet(viewsets.ViewSet):
     queryset = UserInfo.objects.all()
     serializer_class = UserInfoSerializer
 
@@ -41,50 +41,53 @@ class UserInfoViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         places = random_generator_pick_2()
-        UserInfo.objects.create(user=self.kwargs['pk'], user_food=10, user_water=10, state='Florida', city="Miami",
+        user = User.objects.get(id=request.data.get("id"))
+        UserInfo.objects.create(user=user, user_food=10, user_water=10, state='Florida', city="Miami",
                                 location=places[0], food_available_1=5, water_available_1=5,
                                 location_2=places[1], food_available_2=5, water_available_2=5)
         return Response("added to db")
 
-    def update(self, request, *args, **kwargs):
-        # user id, next_city user chooses, food, water
-        random_places = random_generator_pick_2()
 
-        us_map = Map()
-        us_map.populate_map()
-        try:
-            new_city = us_map.search_map(request.data.get('new_city'))
+@api_view(["PUT"])
+def update(request):
+    # user id, next_city user chooses, food, water
+    random_places = random_generator_pick_2()
+    us_map = Map()
+    us_map.populate_map()
 
-            user_data = UserInfo.objects.get(user_id=self.kwargs['pk'])
+    try:
+        new_city = us_map.search_map(request.data.get('new_city'))
 
-            user_data.city = new_city.city
+        user_data = UserInfo.objects.get(user_id=request.data.get('id'))
 
-            user_data.user_food = request.data.get('user_food')
-            user_data.user_water = request.data.get('user_water')
+        user_data.city = new_city.city
 
-            user_data.location = random_places[0]
-            user_data.food_available_1 = random.randint(1, 10)
-            user_data.water_available = random.randint(1, 10)
-            user_data.state = new_city.state
+        user_data.user_food = request.data.get('user_food')
+        user_data.user_water = request.data.get('user_water')
 
-            user_data.location_2 = random_places[1]
-            user_data.food_available_2 = random.randint(1, 10)
-            user_data.water_available_2 = random.randint(1, 10)
+        user_data.location = random_places[0]
+        user_data.food_available_1 = random.randint(1, 10)
+        user_data.water_available = random.randint(1, 10)
+        user_data.state = new_city.state
 
-            user_data.save()
+        user_data.location_2 = random_places[1]
+        user_data.food_available_2 = random.randint(1, 10)
+        user_data.water_available_2 = random.randint(1, 10)
 
-            player_data = UserInfo.objects.values().get(user_id=self.kwargs['pk'])
+        user_data.save()
 
-            left = new_city.left.city if new_city.left else None
-            right = new_city.right.city if new_city.right else None
-            previous = new_city.previous.city if new_city.previous else None
-            player_data['left'] = left
-            player_data['right'] = right
-            player_data['previous'] = previous
-            return Response(player_data)
+        player_data = UserInfo.objects.values().get(user_id=request.data.get("id"))
 
-        except ObjectDoesNotExist:
-            return Response("Invalid User Id")
+        left = new_city.left.city if new_city.left else None
+        right = new_city.right.city if new_city.right else None
+        previous = new_city.previous.city if new_city.previous else None
+        player_data['left'] = left
+        player_data['right'] = right
+        player_data['previous'] = previous
+        return Response(player_data)
+
+    except ObjectDoesNotExist:
+        return Response("Invalid User Id")
 
 
 @api_view(["GET"])
