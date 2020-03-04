@@ -117,9 +117,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
 }
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(days=7)
-# }
+
 
 
 CORS_ORIGIN_ALLOW_ALL = True

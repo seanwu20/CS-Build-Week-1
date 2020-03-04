@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import UserInfo
+from .models import UserData
 
 
-class UserInfoSerializer(serializers.ModelSerializer):
+class UserDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserInfo
+        model = UserData
         fields = ['user_id', 'user_food', 'user_water',
                   'state', 'city',
                   'location', 'food_available_1', 'water_available_1',

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class UserInfo(models.Model):
+class UserData(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     user_food = models.IntegerField()
     user_water = models.IntegerField()
