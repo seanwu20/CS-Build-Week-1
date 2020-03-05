@@ -52,14 +52,11 @@ class UserDataViewSet(viewsets.ViewSet):
                                     location_2=places[1], food_available_2=5, water_available_2=5)
 
             user_data = UserData.objects.values().get(user_id=request.data.get("id"))
-            city = us_map.search_map(request.data.get('city'))
 
-            left = city.left.city if city.left else None
-            right = city.right.city if city.right else None
-            previous = city.previous.city if city.previous else None
-            user_data['left'] = left
-            user_data['right'] = right
-            user_data['previous'] = previous
+
+            user_data['left'] = "Jacksonville"
+            user_data['right'] = "Tallahassee"
+            user_data['previous'] = None
 
             return Response(user_data)
         except ObjectDoesNotExist:
