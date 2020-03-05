@@ -13,8 +13,6 @@ from django.db.utils import IntegrityError
 from rest_framework.permissions import IsAuthenticated
 import random
 
-from django.dispatch import receiver
-
 
 class UserDataViewSet(viewsets.ViewSet):
     queryset = UserData.objects.all()
@@ -44,6 +42,9 @@ class UserDataViewSet(viewsets.ViewSet):
 
     def create(self, request, *args, **kwargs):
         places = random_generator_pick_2()
+        us_map = Map()
+        us_map.populate_map()
+
         try:
             user = User.objects.get(id=request.data.get("id"))
             UserData.objects.create(user=user, user_food=10, user_water=10, state='Florida', city="Miami",
@@ -51,6 +52,14 @@ class UserDataViewSet(viewsets.ViewSet):
                                     location_2=places[1], food_available_2=5, water_available_2=5)
 
             user_data = UserData.objects.values().get(user_id=request.data.get("id"))
+            city = us_map.search_map(request.data.get('city'))
+
+            left = city.left.city if city.left else None
+            right = city.right.city if city.right else None
+            previous = city.previous.city if city.previous else None
+            user_data['left'] = left
+            user_data['right'] = right
+            user_data['previous'] = previous
 
             return Response(user_data)
         except ObjectDoesNotExist:
